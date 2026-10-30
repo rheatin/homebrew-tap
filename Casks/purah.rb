@@ -22,7 +22,7 @@ cask "purah" do
   # same state as one built on this machine. Delete this block the day a
   # Developer ID certificate signs a release.
   postflight_steps do
-    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{appdir}/Purah.app"]
+    run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{appdir}}/Purah.app"]
   end
 
   caveats <<~EOS
