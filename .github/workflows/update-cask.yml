@@ -1,0 +1,45 @@
+name: Update cask
+
+# Purah publishes `purah.rb` as a release asset. This copies that file into the
+# tap verbatim, so the cask's version and checksum are never re-derived here:
+# they are written once by Purah's release.sh and carried over unchanged.
+#
+# Triggered by Purah's release script (`repository_dispatch: purah-release`) and
+# by hand. Needs no secrets — the default token reads the public Purah release
+# and pushes to this repository.
+
+on:
+  repository_dispatch:
+    types: [purah-release]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch the cask from the latest Purah release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download --repo rheatin/Purah --pattern 'purah.rb' --dir "$RUNNER_TEMP/cask" --clobber
+          cp "$RUNNER_TEMP/cask/purah.rb" Casks/purah.rb
+
+      - name: Commit if it changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- Casks/purah.rb; then
+            echo "Cask already matches the latest release."
+            exit 0
+          fi
+          version=$(grep -oE 'version "[^"]+"' Casks/purah.rb | head -1 | cut -d'"' -f2)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Casks/purah.rb
+          git commit -m "📦Build:[Release] Update cask to v${version}"
+          git push
