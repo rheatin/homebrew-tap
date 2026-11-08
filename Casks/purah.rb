@@ -1,6 +1,6 @@
 cask "purah" do
-  version "0.7.18"
-  sha256 "764eb75d0c0e9aafd2608f8fbfadd7acae756cc70dd39dc43905ee43245fdcd7"
+  version "0.7.19"
+  sha256 "bcb087e3e007f752f36d58209670514bb2324d0d21a7d5ee454aa57371fabe27"
 
   url "https://github.com/rheatin/Purah/releases/download/v#{version}/Purah-v#{version}-macOS.zip"
   name "Purah"
